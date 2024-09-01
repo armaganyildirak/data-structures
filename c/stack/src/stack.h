@@ -3,20 +3,19 @@
 
 #include <stdbool.h>
 
-struct stack_record {
+struct stack_node {
     void *data;
+    struct stack_node *next;
 };
 
 struct stack {
-    struct stack_record stack_record;
-    struct stack *next;
+    struct stack_node *top;
 };
 
-struct stack_record create_stack_record(void *data);
-struct stack *create_stack(struct stack_record stack_record);
-void push(struct stack **stack, struct stack_record stack_record);
-struct stack_record pop(struct stack **stack);
+struct stack *new_stack();
+void push(struct stack **stack, void *data);
+void *pop(struct stack **stack);
 bool is_empty(struct stack *stack);
-struct stack_record peek(struct stack *stack);
+void *peek(struct stack *stack);
 
 #endif // STACK_H
