@@ -27,17 +27,15 @@ bool is_empty(struct stack* stack) {
     return true;
 }
 
-struct stack * push(struct stack *stack, struct stack_record stack_record) {
+void push(struct stack **stack, struct stack_record stack_record) {
     if (stack == NULL || stack_record.data == NULL) {
         printf("Error - Stack or Record is NULL!\n");
         exit(1);
     }
 
     struct stack *new = create_stack(stack_record);
-    
-    new->next = stack;
-
-    return new;
+    new->next = *stack;
+    *stack = new;
 }
 
 struct stack_record pop(struct stack **stack) {
@@ -53,4 +51,15 @@ struct stack_record pop(struct stack **stack) {
     free(temp);
 
     return popped_record;
+}
+
+struct stack_record peek(struct stack *stack) {
+    if(!is_empty(stack)) {
+        printf("Error - Stack is empty!\n");
+        exit(1);
+    }
+
+    struct stack_record peeked_record = stack->stack_record;
+
+    return peeked_record;
 }
