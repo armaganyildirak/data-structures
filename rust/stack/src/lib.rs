@@ -1,14 +1,10 @@
-use std::cell::RefCell;
-use std::option::Option;
-use std::rc::Rc;
-
 struct StackNode<T> {
     data: T,
-    next: Option<Rc<RefCell<StackNode<T>>>>,
+    next: Option<Box<StackNode<T>>>,
 }
 
 pub struct Stack<T> {
-    top: Option<Rc<RefCell<StackNode<T>>>>,
+    top: Option<Box<StackNode<T>>>,
 }
 
 impl<T> Default for Stack<T> {
@@ -23,45 +19,22 @@ impl<T> Stack<T> {
     }
 
     pub fn push(&mut self, data: T) {
-        let new_node = Rc::new(RefCell::new(StackNode {
+        let new_node = Box::new(StackNode {
             data,
-            next: self.top.clone(),
-        }));
+            next: self.top.take(),
+        });
         self.top = Some(new_node);
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        if !self.is_empty() {
-            if let Some(top_node) = self.top.take() {
-                if let Ok(top_node_taken) = Rc::try_unwrap(top_node) {
-                    let top_node_taken_unwrapped = top_node_taken.into_inner();
-                    self.top = top_node_taken_unwrapped.next;
-                    Some(top_node_taken_unwrapped.data)
-                } else {
-                    None
-                }
-            } else {
-                None
-            }
-        } else {
-            None
-        }
+        self.top.take().map(|top_node| {
+            self.top = top_node.next;
+            top_node.data
+        })
     }
 
-    pub fn peek(&self) -> Option<T>
-    where
-        T: Clone,
-    {
-        if !self.is_empty() {
-            if let Some(ref top_node) = self.top {
-                let top_node_borrowed = top_node.borrow();
-                Some(top_node_borrowed.data.clone())
-            } else {
-                None
-            }
-        } else {
-            None
-        }
+    pub fn peek(&self) -> Option<&T> {
+        self.top.as_ref().map(|top_node| &top_node.data)
     }
 
     pub fn is_empty(&self) -> bool {
@@ -86,19 +59,20 @@ mod tests {
         assert_eq!(stack.pop(), Some(10));
         assert_eq!(stack.pop(), None);
     }
+
     #[test]
     fn test_stack_peek() {
         let mut stack = Stack::default();
         assert_eq!(stack.peek(), None);
 
         stack.push(100);
-        assert_eq!(stack.peek(), Some(100));
+        assert_eq!(stack.peek(), Some(&100));
 
         stack.push(200);
-        assert_eq!(stack.peek(), Some(200));
+        assert_eq!(stack.peek(), Some(&200));
 
         stack.pop();
-        assert_eq!(stack.peek(), Some(100));
+        assert_eq!(stack.peek(), Some(&100));
     }
 
     #[test]
