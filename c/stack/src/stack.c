@@ -6,53 +6,51 @@
 struct stack *new_stack() {
     struct stack *stack = (struct stack *)malloc(sizeof(struct stack));
     if (stack == NULL) {
-        printf("Error - malloc failed\n");
-        exit(1);
+        perror("Error - malloc failed");
+        exit(EXIT_FAILURE);
     }
     stack->top = NULL;
     return stack;
 }
 
-bool is_empty(struct stack* stack) {
-    if(stack->top == NULL) {
-        return false;
-    }
-
-    return true;
+bool is_empty(const struct stack *stack) {
+    return stack->top == NULL;
 }
 
-void push(struct stack **stack, void *data) {
+void push(struct stack *stack, void *data) {
     if (stack == NULL) {
-        printf("Error - Stack is NULL!\n");
-        exit(1);
+        fprintf(stderr, "Error - Stack is NULL!\n");
+        exit(EXIT_FAILURE);
     }
 
     struct stack_node *new_node = (struct stack_node *)malloc(sizeof(struct stack_node));
     if (new_node == NULL) {
-        printf("Error - malloc failed\n");
-        exit(1);
+        perror("Error - malloc failed");
+        exit(EXIT_FAILURE);
     }
     new_node->data = data;
-    new_node->next = (*stack)->top;
-    (*stack)->top = new_node;
+    new_node->next = stack->top;
+    stack->top = new_node;
 }
 
-void *pop(struct stack **stack) {
-    if(!is_empty(*stack)) {
-        printf("Error - Stack is empty!\n");
-        exit(1);
+void *pop(struct stack *stack) {
+    if (is_empty(stack)) {
+        fprintf(stderr, "Error - Stack is empty!\n");
+        exit(EXIT_FAILURE);
     }
 
-    struct stack_node *new_node = (*stack)->top;
-    (*stack)->top = (*stack)->top->next;
+    struct stack_node *node_to_remove = stack->top;
+    void *data = node_to_remove->data;
+    stack->top = node_to_remove->next;
+    free(node_to_remove);
 
-    return new_node->data;
+    return data;
 }
 
-void *peek(struct stack *stack) {
-    if(!is_empty(stack)) {
-        printf("Error - Stack is empty!\n");
-        exit(1);
+void *peek(const struct stack *stack) {
+    if (is_empty(stack)) {
+        fprintf(stderr, "Error - Stack is empty!\n");
+        exit(EXIT_FAILURE);
     }
 
     return stack->top->data;

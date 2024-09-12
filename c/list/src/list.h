@@ -13,8 +13,8 @@ struct list {
 
 struct list *init_list();
 struct list_node *create_node(void *data);
-void insert_node(struct list **list, void *data);
-void delete_node(struct list **list, void *data);
-void print_list(struct list *list);
+void insert_node(struct list *list, void *data);
+void delete_node(struct list *list, void *data);
+void print_list(const struct list *list);
 
 #endif // LIST_H

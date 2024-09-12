@@ -13,9 +13,9 @@ struct stack {
 };
 
 struct stack *new_stack();
-void push(struct stack **stack, void *data);
-void *pop(struct stack **stack);
-bool is_empty(struct stack *stack);
-void *peek(struct stack *stack);
+void push(struct stack *stack, void *data);
+void *pop(struct stack *stack);
+bool is_empty(const struct stack *stack);
+void *peek(const struct stack *stack);
 
 #endif // STACK_H
