@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "stack.h"
 
 // Constructor
@@ -27,7 +28,7 @@ T Stack<T>::peek() const {
 }
 
 template <typename T>
-void Stack<T>::push(const T& data) {
+void Stack<T>::push(const T &data) {
     StackNode *new_node = new StackNode;
     if (new_node == nullptr) {
         throw std::runtime_error("Error - Memory allocation failed");

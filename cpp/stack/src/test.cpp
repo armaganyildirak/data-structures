@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include "stack.h"
 
@@ -7,11 +8,7 @@ void test_stack_push() {
     stack.push(10);
     stack.push(20);
 
-    if (stack.peek() == 20) {
-        std::cout << "test_stack_push: Passed\n";
-    } else {
-        std::cout << "test_stack_push: Failed\n";
-    }
+    assert(stack.peek() == 20);
 }
 
 void test_stack_pop() {
@@ -20,40 +17,24 @@ void test_stack_pop() {
     stack.push(20);
 
     int popped = stack.pop();
-    if (popped == 20 && stack.peek() == 10) {
-        std::cout << "test_stack_pop: Passed\n";
-    } else {
-        std::cout << "test_stack_pop: Failed\n";
-    }
+    assert(popped == 20);
+    assert(stack.peek() == 10);
 }
 
 void test_stack_peek() {
     Stack<int> stack;
     stack.push(30);
-
-    if (stack.peek() == 30) {
-        std::cout << "test_stack_peek: Passed\n";
-    } else {
-        std::cout << "test_stack_peek: Failed\n";
-    }
+    assert(stack.peek() == 30);
 }
 
 void test_stack_is_empty() {
     Stack<int> stack;
 
-    if (stack.is_empty()) {
-        std::cout << "test_stack_is_empty: Passed\n";
-    } else {
-        std::cout << "test_stack_is_empty: Failed\n";
-    }
+    assert(stack.is_empty());
 
     stack.push(10);
-
-    if (!stack.is_empty()) {
-        std::cout << "test_stack_is_empty (non-empty): Passed\n";
-    } else {
-        std::cout << "test_stack_is_empty (non-empty): Failed\n";
-    }
+    
+    assert(stack.peek() == 10);
 }
 
 int main() {
@@ -62,5 +43,7 @@ int main() {
     test_stack_peek();
     test_stack_is_empty();
 
+    std::cout << "All tests passed!" << std::endl;
+    return 0;
     return 0;
 }

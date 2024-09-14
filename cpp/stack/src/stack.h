@@ -6,10 +6,10 @@ class Stack {
 private:
     struct StackNode {
         T data;
-        StackNode* next;
+        StackNode *next;
     };
 
-    StackNode* top;
+    StackNode *top;
 
 public:
     // Constructor
@@ -18,7 +18,7 @@ public:
     // Destructor
     ~Stack();
 
-    void push(const T& data);
+    void push(const T &data);
 
     T pop();
 
