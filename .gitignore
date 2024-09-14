@@ -1,4 +1,6 @@
 */*/stack
 */*/stack.o
+*/*/list
+*/*/list.o
 */*/zig-out
 */*/.zig-cache

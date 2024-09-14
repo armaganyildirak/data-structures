@@ -12,10 +12,10 @@ pub const Stack = struct {
         return Stack{ .top = null };
     }
 
-    pub fn push(self: *Stack, value: anytype) !void {
+    pub fn push(self: *Stack, data: i32) !void {
         const new_node = try std.heap.page_allocator.create(StackNode);
         new_node.* = StackNode{
-            .data = value,
+            .data = data,
             .next = self.top,
         };
         self.top = new_node;
