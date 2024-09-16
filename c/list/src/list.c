@@ -72,3 +72,13 @@ void delete_node(struct list *list, void *data) {
 
     fprintf(stderr, "Error - data not found in the list\n");
 }
+
+void free_list(struct list *list) {
+    struct list_node *temp = list->head;
+    while (temp != NULL) {
+        struct list_node *next_node = temp->next;
+        free(temp);
+        temp = next_node;
+    }
+    free(list);
+}

@@ -33,9 +33,13 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
+# Valgrind rule to run the program with Valgrind
+valgrind: $(TARGET)
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
+
 # Clean rule to remove generated files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 # Phony targets
-.PHONY: all clean
+.PHONY: all valgrind clean

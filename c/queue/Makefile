@@ -12,7 +12,7 @@ BIN_DIR = bin
 # Files
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-TARGET = $(BIN_DIR)/list_program
+TARGET = $(BIN_DIR)/queue_program
 
 # Rules
 all: $(TARGET)

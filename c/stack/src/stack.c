@@ -55,3 +55,10 @@ void *peek(const struct stack *stack) {
 
     return stack->top->data;
 }
+
+void free_stack(struct stack *stack) {
+    while(!is_empty(stack)) {
+        pop(stack);
+    }
+    free(stack);
+}

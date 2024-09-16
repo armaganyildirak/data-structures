@@ -17,5 +17,6 @@ void push(struct stack *stack, void *data);
 void *pop(struct stack *stack);
 bool is_empty(const struct stack *stack);
 void *peek(const struct stack *stack);
+void free_stack(struct stack *stack);
 
 #endif // STACK_H

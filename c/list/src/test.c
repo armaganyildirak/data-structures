@@ -10,7 +10,7 @@ void test_init_list() {
     } else {
         printf("test_init_list passed\n");
     }
-    free(list);
+    free_list(list);
 }
 
 void test_insert_node() {
@@ -39,7 +39,7 @@ void test_insert_node() {
     } else {
         printf("test_insert_node passed\n");
     }
-    free(list);
+    free_list(list);
 }
 
 void test_print_list() {
@@ -53,7 +53,7 @@ void test_print_list() {
     printf("Testing print_list:\n");
     print_list(list);
 
-    free(list);
+    free_list(list);
 }
 
 void test_delete_node() {
@@ -85,7 +85,7 @@ void test_delete_node() {
     } else {
         printf("test_delete_node passed\n");
     }
-    free(list);
+    free_list(list);
 }
 
 int main() {
