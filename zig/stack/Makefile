@@ -19,6 +19,11 @@ run: build
 	@echo "Running stack executable..."
 	./$(OUT_BINARY)
 
+# Format the code
+fmt:
+	@echo "Formatting code..."
+	$(ZIG) fmt $(SRC_DIR)
+
 # Clean the build files
 clean:
 	@echo "Cleaning up..."
@@ -27,4 +32,4 @@ clean:
 # Run the test and build all together
 all: test build run
 
-.PHONY: test build run clean all
+.PHONY: test build run fmt clean all
