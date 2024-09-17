@@ -34,9 +34,14 @@ $(OBJ_DIR):
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
+# Format the source code
+format:
+	@echo "Formatting source code with clang-format..."
+	clang-format -i $(SRCS)
+
 # Clean rule to remove generated files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 # Phony targets
-.PHONY: all clean
+.PHONY: all clean format
