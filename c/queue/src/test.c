@@ -1,7 +1,7 @@
+#include "queue.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include "queue.h"
 
 void test_init_queue() {
     struct queue *queue = init_queue();

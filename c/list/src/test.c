@@ -1,7 +1,6 @@
+#include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.h"
-
 
 void test_init_list() {
     struct list *list = init_list();

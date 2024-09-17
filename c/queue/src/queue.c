@@ -1,6 +1,6 @@
+#include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "queue.h"
 
 struct queue *init_queue() {
     struct queue *queue = (struct queue *)malloc(sizeof(struct queue));
@@ -14,7 +14,8 @@ struct queue *init_queue() {
 }
 
 struct queue_node *create_node(void *data) {
-    struct queue_node *new_node = (struct queue_node *)malloc(sizeof(struct queue_node));
+    struct queue_node *new_node =
+        (struct queue_node *)malloc(sizeof(struct queue_node));
     if (new_node == NULL) {
         perror("Error - malloc failed");
         exit(EXIT_FAILURE);

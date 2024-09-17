@@ -1,7 +1,7 @@
+#include "stack.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "stack.h"
 
 struct stack *new_stack() {
     struct stack *stack = (struct stack *)malloc(sizeof(struct stack));
@@ -13,9 +13,7 @@ struct stack *new_stack() {
     return stack;
 }
 
-bool is_empty(const struct stack *stack) {
-    return stack->top == NULL;
-}
+bool is_empty(const struct stack *stack) { return stack->top == NULL; }
 
 void push(struct stack *stack, void *data) {
     if (stack == NULL) {
@@ -23,7 +21,8 @@ void push(struct stack *stack, void *data) {
         exit(EXIT_FAILURE);
     }
 
-    struct stack_node *new_node = (struct stack_node *)malloc(sizeof(struct stack_node));
+    struct stack_node *new_node =
+        (struct stack_node *)malloc(sizeof(struct stack_node));
     if (new_node == NULL) {
         perror("Error - malloc failed");
         exit(EXIT_FAILURE);
@@ -57,7 +56,7 @@ void *peek(const struct stack *stack) {
 }
 
 void free_stack(struct stack *stack) {
-    while(!is_empty(stack)) {
+    while (!is_empty(stack)) {
         pop(stack);
     }
     free(stack);

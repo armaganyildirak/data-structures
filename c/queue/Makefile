@@ -37,9 +37,14 @@ $(BIN_DIR):
 valgrind: $(TARGET)
 	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
 
+# Format the source code
+format:
+	@echo "Formatting source code with clang-format..."
+	clang-format -i --style="{IndentWidth: 4}" $(SRCS)
+
 # Clean rule to remove generated files
 clean:
 	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
 # Phony targets
-.PHONY: all valgrind clean
+.PHONY: all valgrind format clean

@@ -1,7 +1,7 @@
+#include "stack.h"
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include "stack.h"
 
 void test_new_stack() {
     struct stack *stack = new_stack();
@@ -19,7 +19,7 @@ void test_push_pop() {
     push(stack, &data2);
 
     assert(peek(stack) == &data2);
-    
+
     int *popped_data = (int *)pop(stack);
     assert(*popped_data == 20);
 
@@ -27,7 +27,7 @@ void test_push_pop() {
     assert(*popped_data == 10);
 
     assert(is_empty(stack));
-    
+
     printf("test_push_pop passed\n");
     free_stack(stack);
 }
@@ -38,7 +38,7 @@ void test_peek() {
 
     push(stack, &data);
     assert(*(int *)peek(stack) == 30);
-    
+
     printf("test_peek passed\n");
 
     free_stack(stack);
@@ -48,14 +48,14 @@ void test_is_empty() {
     struct stack *stack = new_stack();
 
     assert(is_empty(stack));
-    
+
     int data = 40;
     push(stack, &data);
     assert(!is_empty(stack));
 
     pop(stack);
     assert(is_empty(stack));
-    
+
     printf("test_is_empty passed\n");
     free_stack(stack);
 }

@@ -1,6 +1,6 @@
+#include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "list.h"
 
 struct list *init_list() {
     struct list *list = (struct list *)malloc(sizeof(struct list));
@@ -13,7 +13,8 @@ struct list *init_list() {
 }
 
 struct list_node *create_node(void *data) {
-    struct list_node *node = (struct list_node *)malloc(sizeof(struct list_node));
+    struct list_node *node =
+        (struct list_node *)malloc(sizeof(struct list_node));
     if (node == NULL) {
         perror("Error - malloc failed");
         exit(EXIT_FAILURE);
