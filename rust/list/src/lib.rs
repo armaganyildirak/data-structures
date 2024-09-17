@@ -1,6 +1,6 @@
 use std::cell::RefCell;
-use std::rc::Rc;
 use std::fmt::Debug;
+use std::rc::Rc;
 
 struct ListNode<T> {
     data: T,
@@ -90,7 +90,7 @@ impl<T: Debug + PartialEq + Clone> List<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_insert_node() {
         let mut list = List::new();
@@ -121,11 +121,11 @@ mod tests {
         list.delete_node(30);
         list.print_list();
         assert_eq!(list.head.as_ref().unwrap().borrow().data, 10);
-        
+
         list.delete_node(10);
         list.print_list();
         assert_eq!(list.head.as_ref().unwrap().borrow().data, 20);
-          
+
         list.delete_node(20);
         list.print_list();
         assert!(list.is_empty());
