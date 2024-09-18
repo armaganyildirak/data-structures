@@ -12,10 +12,8 @@ private:
     StackNode *top;
 
 public:
-    // Constructor
     Stack();
 
-    // Destructor
     ~Stack();
 
     void push(const T &data);

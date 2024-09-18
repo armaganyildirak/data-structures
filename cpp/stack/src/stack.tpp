@@ -1,11 +1,9 @@
 #include <stdexcept>
 #include "stack.h"
 
-// Constructor
 template <typename T> 
 Stack<T>::Stack() : top(nullptr) {}
 
-// Destructor
 template <typename T>
 Stack<T>::~Stack() {
     while (!is_empty()) {
