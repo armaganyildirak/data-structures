@@ -59,7 +59,6 @@ void test_dequeue_empty_queue() {
     printf("test_dequeue_empty_queue passed\n");
 }
 
-// Test freeing the queue
 void test_free_queue() {
     struct queue *queue = init_queue();
     int data1 = 1, data2 = 2;
@@ -67,11 +66,10 @@ void test_free_queue() {
     enqueue_node(queue, &data1);
     enqueue_node(queue, &data2);
 
-    free_queue(queue); // Should free without errors
+    free_queue(queue);
     printf("test_free_queue passed\n");
 }
 
-// Main function to run the tests
 int main() {
     test_init_queue();
     test_enqueue_node();
