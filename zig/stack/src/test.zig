@@ -8,16 +8,16 @@ test "test stack operations" {
     try stack.push(20);
     try stack.push(30);
 
-    const top_value = stack.peek();
+    const top_value = try stack.peek();
     try std.testing.expectEqual(30, top_value);
 
-    const pop_value1 = stack.pop();
+    const pop_value1 = try stack.pop();
     try std.testing.expectEqual(30, pop_value1);
 
-    const pop_value2 = stack.pop();
+    const pop_value2 = try stack.pop();
     try std.testing.expectEqual(20, pop_value2);
 
-    const pop_value3 = stack.pop();
+    const pop_value3 = try stack.pop();
     try std.testing.expectEqual(10, pop_value3);
 
     try std.testing.expect(stack.is_empty());

@@ -5,6 +5,10 @@ pub const StackNode = struct {
     next: ?*StackNode = null,
 };
 
+pub const StackError = error{
+    StackEmpty,
+};
+
 pub const Stack = struct {
     top: ?*StackNode = null,
 
@@ -21,18 +25,20 @@ pub const Stack = struct {
         self.top = new_node;
     }
 
-    pub fn pop(self: *Stack) i32 {
+    pub fn pop(self: *Stack) !i32 {
         if (self.is_empty()) {
-            std.debug.panic("Stack is empty\n", .{});
+            return StackError.StackEmpty;
         }
-        const node = self.top;
-        self.top = node.?.next;
-        return node.?.data;
+        const temp = self.top;
+        const popped_value = temp.?.data;
+        self.top = temp.?.next;
+        std.heap.page_allocator.destroy(temp.?);
+        return popped_value;
     }
 
-    pub fn peek(self: *Stack) i32 {
+    pub fn peek(self: *Stack) !i32 {
         if (self.is_empty()) {
-            std.debug.panic("Stack is empty\n", .{});
+            return StackError.StackEmpty;
         }
         return self.top.?.data;
     }
@@ -43,9 +49,9 @@ pub const Stack = struct {
 
     pub fn free(self: *Stack) void {
         while (self.top != null) {
-            const node = self.top;
-            self.top = node.?.next;
-            std.heap.page_allocator.destroy(node.?);
+            const temp = self.top;
+            self.top = temp.?.next;
+            std.heap.page_allocator.destroy(temp.?);
         }
     }
 };

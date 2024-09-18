@@ -2,5 +2,7 @@
 */*/stack.o
 */*/list
 */*/list.o
+*/*/queue
+*/*/queue.o
 */*/zig-out
 */*/.zig-cache

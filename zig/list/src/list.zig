@@ -63,6 +63,7 @@ pub const List = struct {
                 temp.?.next.?.prev = temp.?.prev;
             }
         }
+        std.heap.page_allocator.destroy(temp.?);
     }
 
     pub fn print_list(self: *List) void {
