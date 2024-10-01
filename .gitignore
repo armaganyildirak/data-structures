@@ -4,5 +4,7 @@
 */*/list.o
 */*/queue
 */*/queue.o
+*/*/tree
+*/*/tree.o
 */*/zig-out
 */*/.zig-cache
