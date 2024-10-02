@@ -3,20 +3,55 @@
 
 #include <stdbool.h>
 
+enum data_type { 
+    INT,
+    FLOAT,
+    STRING,
+    DOUBLE,
+    CHAR,
+    LONG,
+    SHORT,
+    BOOL,
+    POINTER,
+};
+
+union data_value {
+    int int_val;
+    float float_val;
+    char *string_val;
+    double double_val;
+    char char_val;
+    long long_val;
+    short short_val;
+    bool bool_val;
+    void *pointer_val;
+};
+
 struct stack_node {
-    void *data;
+    union data_value data;
     struct stack_node *next;
 };
 
 struct stack {
+    enum data_type type;
     struct stack_node *top;
+    int size;
 };
 
-struct stack *new_stack();
-void push(struct stack *stack, void *data);
-void *pop(struct stack *stack);
+enum stack_error_code {
+    STACK_SUCCESS = 0,
+    STACK_ERROR_NULL = -1,
+    STACK_ERROR_EMPTY = -2,
+    STACK_ERROR_MALLOC = -3,
+    STACK_ERROR_TYPE_MISMATCH = -4
+};
+
+struct stack *new_stack(enum data_type type);
+int push(struct stack *stack, union data_value data);
+int pop(struct stack *stack, union data_value *data);
 bool is_empty(const struct stack *stack);
-void *peek(const struct stack *stack);
+int peek(const struct stack *stack, union data_value *data);
 void free_stack(struct stack *stack);
+void print_stack(struct stack *stack);
 
 #endif // STACK_H
