@@ -8,21 +8,20 @@ void test_int_stack() {
     struct stack *stack = new_stack(INT);
     assert(stack != NULL);
 
-    union data_value data;
-    data.int_val = 10;
-    assert(push(stack, data) == STACK_SUCCESS);
+    int data = 10;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
-    data.int_val = 20;
-    assert(push(stack, data) == STACK_SUCCESS);
+    data = 20;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
     assert(!is_empty(stack));
 
-    union data_value popped_data;
+    int popped_data;
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.int_val == 20);
+    assert(popped_data == 20);
 
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.int_val == 10);
+    assert(popped_data == 10);
 
     assert(is_empty(stack));
 
@@ -36,32 +35,35 @@ void test_string_stack() {
     struct stack *stack = new_stack(STRING);
     assert(stack != NULL);
 
-    union data_value hello;
-    hello.string_val = (char *)malloc(6);
-    strncpy(hello.string_val, "Hello", 6);
-    assert(push(stack, hello) == STACK_SUCCESS);
+    char *hello = (char *)malloc(6);
+    strncpy(hello, "Hello", 6);
+    int res = push(stack, hello);
+    assert(res == STACK_SUCCESS);
 
-    union data_value world;
-    world.string_val = (char *)malloc(6);
-    strncpy(world.string_val, "World", 6);
-    assert(push(stack, world) == STACK_SUCCESS);
+    char *world = (char *)malloc(6);
+    strncpy(world, "World", 6);
+    res = push(stack, world);
+    assert(res == STACK_SUCCESS);
 
     assert(!is_empty(stack));
 
-    union data_value popped_data;
-    assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(strcmp(popped_data.string_val, "World") == 0);
+    char *popped_data;
 
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(strcmp(popped_data.string_val, "Hello") == 0);
+    assert(strcmp(popped_data, "World") == 0);
+    free(popped_data);
+
+    assert(pop(stack, &popped_data) == STACK_SUCCESS);
+    assert(strcmp(popped_data, "Hello") == 0);
+    free(popped_data);
 
     assert(is_empty(stack));
 
     assert(pop(stack, &popped_data) == STACK_ERROR_EMPTY);
 
-    free(hello.string_val);
-    free(world.string_val);
     free_stack(stack);
+    free(hello);
+    free(world);
     printf("test_string_stack passed!\n");
 }
 
@@ -69,22 +71,21 @@ void test_float_stack() {
     struct stack *stack = new_stack(FLOAT);
     assert(stack != NULL);
 
-    union data_value data;
-    data.float_val = 1.23f;
-    assert(push(stack, data) == STACK_SUCCESS);
+    float data = 1.23f;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
-    data.float_val = 4.56f;
-    assert(push(stack, data) == STACK_SUCCESS);
+    data = 4.56f;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
     assert(stack->size == 2);
     assert(!is_empty(stack));
 
-    union data_value popped_data;
+    float popped_data;
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.float_val == 4.56f);
+    assert(popped_data == 4.56f);
 
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.float_val == 1.23f);
+    assert(popped_data == 1.23f);
 
     assert(stack->size == 0);
     assert(is_empty(stack));
@@ -99,21 +100,21 @@ void test_bool_stack() {
     struct stack *stack = new_stack(BOOL);
     assert(stack != NULL);
 
-    union data_value data;
-    data.bool_val = true;
-    assert(push(stack, data) == STACK_SUCCESS);
+    bool data;
+    data = true;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
-    data.bool_val = false;
-    assert(push(stack, data) == STACK_SUCCESS);
+    data = false;
+    assert(push(stack, &data) == STACK_SUCCESS);
 
     assert(!is_empty(stack));
 
-    union data_value popped_data;
+    bool popped_data;
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.bool_val == false);
+    assert(popped_data == false);
 
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.bool_val == true);
+    assert(popped_data == true);
 
     assert(is_empty(stack));
 
@@ -130,21 +131,21 @@ void test_pointer_stack() {
     int x = 42;
     int y = 84;
 
-    union data_value data;
-    data.pointer_val = &x;
+    void *data;
+    data = &x;
     assert(push(stack, data) == STACK_SUCCESS);
 
-    data.pointer_val = &y;
+    data = &y;
     assert(push(stack, data) == STACK_SUCCESS);
 
     assert(!is_empty(stack));
 
-    union data_value popped_data;
+    void *popped_data;
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.pointer_val == &y);
+    assert(popped_data == &y);
 
     assert(pop(stack, &popped_data) == STACK_SUCCESS);
-    assert(popped_data.pointer_val == &x);
+    assert(popped_data == &x);
 
     assert(is_empty(stack));
 
