@@ -121,7 +121,7 @@ int push(struct stack *stack, void *data) {
 
     int set_result = set_data(stack->type, new_node, data);
     if (set_result != STACK_SUCCESS) {
-        free(new_node); // Free allocated node in case of error
+        free(new_node);
         return set_result;
     }
 
@@ -145,7 +145,6 @@ int pop(struct stack *stack, void *data) {
 
     stack->top = node_to_remove->next;
 
-    // If stack contains strings, free the memory
     if (stack->type == STRING && node_to_remove->string_val != NULL) {
         free(node_to_remove->string_val);
     }
