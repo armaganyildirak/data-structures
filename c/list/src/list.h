@@ -43,7 +43,8 @@ enum list_error_code {
     LIST_ERROR_EMPTY = -2,
     LIST_ERROR_MALLOC = -3,
     LIST_ERROR_TYPE_MISMATCH = -4, 
-    LIST_ERROR_INDEX_OUT_OF_BOUNDS = -5
+    LIST_ERROR_INDEX_OUT_OF_BOUNDS = -5,
+    LIST_ERROR_DATA_NOT_FOUND = -6
 };
 
 struct list *init_list(enum data_type type);
@@ -51,4 +52,5 @@ int insert_node(struct list *list, void *data, int idx);
 int delete_node(struct list *list, int idx);
 void print_list(const struct list *list);
 void free_list(struct list *list);
+int search(struct list *list, void *data);
 #endif // LIST_H

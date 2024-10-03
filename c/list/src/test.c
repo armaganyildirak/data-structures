@@ -108,6 +108,45 @@ void test_error_handling() {
     printf("test_error_handling passed!\n");
 }
 
+void test_search_function() {
+    struct list *int_list = init_list(INT);
+
+    int val1 = 10, val2 = 20, val3 = 30;
+    insert_node(int_list, &val1, 0);
+    insert_node(int_list, &val2, 1);
+    insert_node(int_list, &val3, 2);
+
+    assert(search(int_list, &val1) == 0);
+    assert(search(int_list, &val2) == 1);
+    assert(search(int_list, &val3) == 2);
+
+    int not_in_list = 100;
+    assert(search(int_list, &not_in_list) == LIST_ERROR_DATA_NOT_FOUND);
+
+    free_list(int_list);
+    
+    struct list *str_list = init_list(STRING);
+
+    char *str1 = "Hello";
+    char *str2 = "World";
+    char *str3 = "Test";
+    insert_node(str_list, str1, 0);
+    insert_node(str_list, str2, 1);
+    insert_node(str_list, str3, 2);
+
+    assert(search(str_list, str1) == 0);
+    assert(search(str_list, str2) == 1);
+    assert(search(str_list, str3) == 2);
+
+    char *not_in_list_str = "NotFound";
+    assert(search(str_list, not_in_list_str) == LIST_ERROR_DATA_NOT_FOUND);
+
+    assert(search(str_list, NULL) == LIST_ERROR_DATA_NOT_FOUND);
+
+    free_list(str_list);
+    printf("All search tests passed!\n");
+}
+
 int main() {
     test_init_list();
     test_is_empty();
@@ -115,6 +154,7 @@ int main() {
     test_delete_node();
     test_string_handling();
     test_error_handling();
+    test_search_function();
 
     printf("All tests passed!\n");
     return 0;

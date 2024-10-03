@@ -207,3 +207,66 @@ void print_list(const struct list *list) {
     }
     printf("NULL\n");
 }
+
+int search(struct list *list, void *data) {
+    if (list == NULL || data == NULL) {
+        return LIST_ERROR_DATA_NOT_FOUND;  // Return error if list or data is NULL
+    }
+
+    struct list_node *temp = list->head;
+    int idx = 0;
+    while (temp != NULL) {
+        switch (list->type) {
+        case INT:
+            if (temp->int_val == *(int *)data) {
+                return idx; 
+            }
+            break;
+        case FLOAT:
+            if (temp->float_val == *(float *)data) {
+                return idx; 
+            }
+            break;
+        case STRING:
+            if (strcmp(temp->string_val, (char *)data) == 0) {
+                return idx; 
+            }
+            break;
+        case DOUBLE:
+            if (temp->double_val == *(double *)data) {
+                return idx; 
+            }
+            break;
+        case CHAR:
+            if (temp->char_val == *(char *)data) {
+                return idx; 
+            }
+            break;
+        case LONG:
+            if (temp->long_val == *(long *)data) {
+                return idx; 
+            }
+            break;
+        case SHORT:
+            if (temp->short_val == *(short *)data) {
+                return idx; 
+            }
+            break;
+        case BOOL:
+            if (temp->bool_val == *(bool *)data) {
+                return idx; 
+            }
+            break;
+        case POINTER:
+            if (temp->pointer_val == data) {
+                return idx; 
+            }
+            break;
+        default:
+            break;
+        }
+        idx++;
+        temp = temp->next;
+    }
+    return LIST_ERROR_DATA_NOT_FOUND;
+}
