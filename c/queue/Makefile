@@ -35,7 +35,7 @@ $(BIN_DIR):
 
 # Valgrind rule to run the program with Valgrind
 valgrind: $(TARGET)
-	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET)
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all -s ./$(TARGET)
 
 # Format the source code
 format:

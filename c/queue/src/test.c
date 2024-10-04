@@ -1,82 +1,94 @@
-#include "queue.h"
-#include <assert.h>
 #include <stdio.h>
+#include <assert.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include "queue.h"
 
-void test_init_queue() {
-    struct queue *queue = init_queue();
-    assert(queue != NULL);
-    assert(queue->head == NULL);
-    assert(queue->tail == NULL);
-    free_queue(queue);
-    printf("test_init_queue passed\n");
+void test_int_queue() {
+    struct queue *q = init_queue(INT);
+    int data1 = 10, data2 = 20, result;
+
+    assert(enqueue_node(q, &data1) == QUEUE_SUCCESS);
+    assert(enqueue_node(q, &data2) == QUEUE_SUCCESS);
+    
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(result == 10);
+    
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(result == 20);
+
+    assert(dequeue_node(q, &result) == QUEUE_ERROR_EMPTY);
+
+    free_queue(q);
+    printf("Integer queue test passed!\n");
 }
 
-void test_enqueue_node() {
-    struct queue *queue = init_queue();
-    int data1 = 1, data2 = 2;
+void test_string_queue() {
+    struct queue *q = init_queue(STRING);
+    char *data1 = "Hello", *data2 = "World", *result;
 
-    enqueue_node(queue, &data1);
-    assert(queue->head != NULL);
-    assert(queue->head->data == &data1);
-    assert(queue->tail->data == &data1);
+    assert(enqueue_node(q, data1) == QUEUE_SUCCESS);
+    assert(enqueue_node(q, data2) == QUEUE_SUCCESS);
 
-    enqueue_node(queue, &data2);
-    assert(queue->head->next != NULL);
-    assert(queue->head->next->data == &data2);
-    assert(queue->tail->data == &data2);
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(strcmp(result, "Hello") == 0);
+    free(result);
 
-    free_queue(queue);
-    printf("test_enqueue_node passed\n");
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(strcmp(result, "World") == 0);
+    free(result);
+
+    assert(dequeue_node(q, &result) == QUEUE_ERROR_EMPTY);
+
+    free_queue(q);
+    printf("String queue test passed!\n");
 }
 
-void test_dequeue_node() {
-    struct queue *queue = init_queue();
-    int data1 = 1, data2 = 2;
+void test_float_queue() {
+    struct queue *q = init_queue(FLOAT);
+    float data1 = 1.5, data2 = 2.5, result;
 
-    enqueue_node(queue, &data1);
-    enqueue_node(queue, &data2);
+    assert(enqueue_node(q, &data1) == QUEUE_SUCCESS);
+    assert(enqueue_node(q, &data2) == QUEUE_SUCCESS);
 
-    int *dequeued_data = (int *)dequeue_node(queue);
-    assert(dequeued_data == &data1);
-    assert(queue->head->data == &data2);
-    assert(queue->tail->data == &data2);
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(result == 1.5f);
 
-    dequeued_data = (int *)dequeue_node(queue);
-    assert(dequeued_data == &data2);
-    assert(queue->head == NULL);
-    assert(queue->tail == NULL);
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(result == 2.5f);
 
-    free_queue(queue);
-    printf("test_dequeue_node passed\n");
+    assert(dequeue_node(q, &result) == QUEUE_ERROR_EMPTY);
+
+    free_queue(q);
+    printf("Float queue test passed!\n");
 }
 
-void test_dequeue_empty_queue() {
-    struct queue *queue = init_queue();
-    void *data = dequeue_node(queue);
-    assert(data == NULL);
-    free_queue(queue);
-    printf("test_dequeue_empty_queue passed\n");
-}
+void test_pointer_queue() {
+    struct queue *q = init_queue(POINTER);
+    int value1 = 10, value2 = 20;
+    int *result;
 
-void test_free_queue() {
-    struct queue *queue = init_queue();
-    int data1 = 1, data2 = 2;
+    assert(enqueue_node(q, &value1) == QUEUE_SUCCESS);
+    assert(enqueue_node(q, &value2) == QUEUE_SUCCESS);
 
-    enqueue_node(queue, &data1);
-    enqueue_node(queue, &data2);
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(*result == 10);
 
-    free_queue(queue);
-    printf("test_free_queue passed\n");
+    assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
+    assert(*result == 20);
+
+    assert(dequeue_node(q, &result) == QUEUE_ERROR_EMPTY);
+
+    free_queue(q);
+    printf("Pointer queue test passed!\n");
 }
 
 int main() {
-    test_init_queue();
-    test_enqueue_node();
-    test_dequeue_node();
-    test_dequeue_empty_queue();
-    test_free_queue();
-
+    test_int_queue();
+    test_string_queue();
+    test_float_queue();
+    test_pointer_queue();
     printf("All tests passed!\n");
     return 0;
 }
