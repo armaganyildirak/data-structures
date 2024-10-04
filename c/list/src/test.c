@@ -124,7 +124,7 @@ void test_search_function() {
     assert(search(int_list, &not_in_list) == LIST_ERROR_DATA_NOT_FOUND);
 
     free_list(int_list);
-    
+
     struct list *str_list = init_list(STRING);
 
     char *str1 = "Hello";

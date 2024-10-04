@@ -12,7 +12,7 @@ struct queue *init_queue(enum data_type type) {
     queue->head = NULL;
     queue->tail = NULL;
     queue->type = type;
-    queue->size=0;
+    queue->size = 0;
     return queue;
 }
 
@@ -145,7 +145,7 @@ int dequeue_node(struct queue *queue, void *data) {
         queue->tail = NULL;
     }
     queue->size--;
-    
+
     free(temp);
     return QUEUE_SUCCESS;
 }

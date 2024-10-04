@@ -1,9 +1,9 @@
-#include <stdio.h>
+#include "queue.h"
 #include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include "queue.h"
 
 void test_int_queue() {
     struct queue *q = init_queue(INT);
@@ -11,10 +11,10 @@ void test_int_queue() {
 
     assert(enqueue_node(q, &data1) == QUEUE_SUCCESS);
     assert(enqueue_node(q, &data2) == QUEUE_SUCCESS);
-    
+
     assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
     assert(result == 10);
-    
+
     assert(dequeue_node(q, &result) == QUEUE_SUCCESS);
     assert(result == 20);
 
