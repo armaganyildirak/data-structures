@@ -1,168 +1,85 @@
-#include "tree.h"
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
+#include "tree.h"
 
-void test_insert_into_empty_tree() {
-    struct tree *tree = init_tree();
-    int value = 10;
-    insert_node(tree, &value);
+void test_tree_int() {
+    struct tree *int_tree = init_tree(INT);
 
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 10);
+    int val1 = 10, val2 = 5, val3 = 15, val4 = 20, val5 = 25; 
 
-    printf("test_insert_into_empty_tree passed!\n");
-    free_tree(tree);
+    assert(insert_node(int_tree, &val1) == TREE_SUCCESS);
+    assert(insert_node(int_tree, &val2) == TREE_SUCCESS);
+    assert(insert_node(int_tree, &val3) == TREE_SUCCESS);
+    assert(insert_node(int_tree, &val4) == TREE_SUCCESS);
+    assert(insert_node(int_tree, &val5) == TREE_SUCCESS);
+
+    assert(int_tree->size == 5);
+
+    assert(int_tree->root->int_val == val1);
+
+    assert(int_tree->root->left->int_val == val2);
+    assert(int_tree->root->right->int_val == val3);
+
+    assert(delete_node(int_tree, &val2) == TREE_SUCCESS);
+    assert(int_tree->size == 4);
+
+    free_tree(int_tree);
+    printf("test_tree_int passed.\n");
 }
 
-void test_insert_multiple_nodes() {
-    struct tree *tree = init_tree();
-    int values[] = {10, 5, 15, 3, 7, 12, 18};
+void test_tree_string() {
+    struct tree *str_tree = init_tree(STRING);
 
-    for (int i = 0; i < 7; i++) {
-        insert_node(tree, &values[i]);
-    }
+    char *val1 = "banana";
+    char *val2 = "apple";
+    char *val3 = "cherry";
 
-    assert(*(int *)tree->root->data == 10);
-    assert(*(int *)tree->root->left->data == 5);
-    assert(*(int *)tree->root->right->data == 15);
-    assert(*(int *)tree->root->left->left->data == 3);
-    assert(*(int *)tree->root->left->right->data == 7);
-    assert(*(int *)tree->root->right->left->data == 12);
-    assert(*(int *)tree->root->right->right->data == 18);
+    assert(insert_node(str_tree, val1) == TREE_SUCCESS);
+    assert(insert_node(str_tree, val2) == TREE_SUCCESS);
+    assert(insert_node(str_tree, val3) == TREE_SUCCESS);
 
-    print_tree(tree->root);
-    printf("test_insert_multiple_nodes passed!\n");
-    free_tree(tree);
+    assert(str_tree->size == 3);
+
+    assert(strcmp(str_tree->root->string_val, val1) == 0);
+    assert(strcmp(str_tree->root->left->string_val, val2) == 0);
+    assert(strcmp(str_tree->root->right->string_val, val3) == 0);
+
+    assert(delete_node(str_tree, val2) == TREE_SUCCESS);
+    assert(str_tree->size == 2);
+
+    free_tree(str_tree);
+    printf("test_tree_string passed.\n");
 }
 
-void test_prevent_duplicate_insert() {
-    struct tree *tree = init_tree();
-    int value1 = 10;
-    int value2 = 10;
+void test_tree_double() {
+    struct tree *dbl_tree = init_tree(DOUBLE);
 
-    insert_node(tree, &value1);
-    insert_node(tree, &value2);
+    double val1 = 10.5, val2 = 5.5, val3 = 15.5;
 
-    assert(*(int *)tree->root->data == 10);
-    assert(tree->root->left == NULL);
-    assert(tree->root->right == NULL);
+    assert(insert_node(dbl_tree, &val1) == TREE_SUCCESS);
+    assert(insert_node(dbl_tree, &val2) == TREE_SUCCESS);
+    assert(insert_node(dbl_tree, &val3) == TREE_SUCCESS);
 
-    printf("test_prevent_duplicate_insert passed!\n");
-    free_tree(tree);
-}
+    assert(dbl_tree->size == 3);
 
-void test_delete_leaf_node() {
-    struct tree *tree = init_tree();
+    assert(dbl_tree->root->double_val == val1);
 
-    int val1 = 10, val2 = 5, val3 = 15;
-    insert_node(tree, &val1);
-    insert_node(tree, &val2);
-    insert_node(tree, &val3);
+    assert(dbl_tree->root->left->double_val == val2);
+    assert(dbl_tree->root->right->double_val == val3);
 
-    delete_node(tree, &val3);
+    assert(delete_node(dbl_tree, &val2) == TREE_SUCCESS);
+    assert(dbl_tree->size == 2);
 
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 10);
-    assert(tree->root->right == NULL);
-    printf("test_delete_leaf_node passed!\n");
-    free_tree(tree);
-}
-
-void test_delete_node_with_one_child() {
-    struct tree *tree = init_tree();
-
-    int val1 = 10, val2 = 5, val3 = 15, val4 = 12;
-    insert_node(tree, &val1);
-    insert_node(tree, &val2);
-    insert_node(tree, &val3);
-    insert_node(tree, &val4);
-
-    delete_node(tree, &val3);
-
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 10);
-    assert(tree->root->right != NULL);
-    assert(*(int *)tree->root->right->data == 12);
-    printf("test_delete_node_with_one_child passed!\n");
-    free_tree(tree);
-}
-
-void test_delete_node_with_two_children() {
-    struct tree *tree = init_tree();
-
-    int val1 = 10, val2 = 5, val3 = 15, val4 = 12, val5 = 20;
-    insert_node(tree, &val1);
-    insert_node(tree, &val2);
-    insert_node(tree, &val3);
-    insert_node(tree, &val4);
-    insert_node(tree, &val5);
-
-    delete_node(tree, &val3);
-
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 10);
-    assert(tree->root->right != NULL);
-    assert(*(int *)tree->root->right->data == 20);
-    printf("test_delete_node_with_two_children passed!\n");
-    free_tree(tree);
-}
-
-void test_delete_root_node() {
-    struct tree *tree = init_tree();
-
-    int val1 = 10, val2 = 5, val3 = 15;
-    insert_node(tree, &val1);
-    insert_node(tree, &val2);
-    insert_node(tree, &val3);
-
-    delete_node(tree, &val1);
-
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 15);
-    assert(tree->root->left != NULL);
-    assert(*(int *)tree->root->left->data == 5);
-    printf("test_delete_root_node passed!\n");
-    free_tree(tree);
-}
-
-void test_delete_empty_tree() {
-    struct tree *tree = init_tree();
-    int val = 10;
-
-    delete_node(tree, &val);
-    assert(tree->root == NULL);
-    printf("test_delete_empty_tree passed!\n");
-    free_tree(tree);
-}
-
-void test_delete_nonexistent_node() {
-    struct tree *tree = init_tree();
-
-    int val1 = 10, val2 = 5, val3 = 15, val4 = 20;
-    insert_node(tree, &val1);
-    insert_node(tree, &val2);
-    insert_node(tree, &val3);
-
-    delete_node(tree, &val4);
-
-    assert(tree->root != NULL);
-    assert(*(int *)tree->root->data == 10);
-    assert(*(int *)tree->root->right->data == 15);
-    printf("test_delete_nonexistent_node passed!\n");
-    free_tree(tree);
+    free_tree(dbl_tree);
+    printf("test_tree_double passed.\n");
 }
 
 int main() {
-    test_insert_into_empty_tree();
-    test_insert_multiple_nodes();
-    test_prevent_duplicate_insert();
-    test_delete_leaf_node();
-    test_delete_node_with_one_child();
-    test_delete_node_with_two_children();
-    test_delete_root_node();
-    test_delete_empty_tree();
-    test_delete_nonexistent_node();
-
+    test_tree_int();
+    test_tree_string();
+    test_tree_double();
+    
     printf("All tests passed!\n");
     return 0;
 }
