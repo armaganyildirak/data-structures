@@ -6,7 +6,6 @@
 #define GREATER 1
 #define SMALLER 2
 #define EQUAL 3
-#define NOTEQUAL 4
 
 struct tree *init_tree(enum data_type type) {
     struct tree *tree = (struct tree *)malloc(sizeof(struct tree));
@@ -19,6 +18,7 @@ struct tree *init_tree(enum data_type type) {
     tree->size = 0;
     return tree;
 }
+
 int set_data(enum data_type type, struct tree_node *node, void *data) {
     switch (type) {
     case INT:
@@ -55,26 +55,51 @@ int set_data(enum data_type type, struct tree_node *node, void *data) {
 int compare(enum data_type type, struct tree_node *node, void *data) {
     switch (type) {
     case INT:
-        return node->int_val > *(int *)data ? SMALLER : GREATER;
-        break;
+        if (node->int_val < *(int *)data)
+            return GREATER;
+        if (node->int_val > *(int *)data)
+            return SMALLER;
+        return EQUAL;
     case FLOAT:
-        return node->float_val > *(float *)data ? SMALLER : GREATER;
-        break;
+        if (node->float_val < *(float *)data)
+            return GREATER;
+        if (node->float_val > *(float *)data)
+            return SMALLER;
+        return EQUAL;
     case DOUBLE:
-        return node->double_val > *(double *)data ? SMALLER : GREATER;
-        break;
+        if (node->double_val < *(double *)data)
+            return GREATER;
+        if (node->double_val > *(double *)data)
+            return SMALLER;
+        return EQUAL;
     case CHAR:
-        return node->char_val > *(char *)data ? SMALLER : GREATER;
-        break;
+        if (node->char_val < *(char *)data)
+            return GREATER;
+        if (node->char_val > *(char *)data)
+            return SMALLER;
+        return EQUAL;
     case LONG:
-        return node->long_val > *(long *)data ? SMALLER : GREATER;
-        break;
+        if (node->long_val < *(long *)data)
+            return GREATER;
+        if (node->long_val > *(long *)data)
+            return SMALLER;
+        return EQUAL;
     case SHORT:
-        return node->short_val > *(short *)data ? SMALLER : GREATER;
-        break;
+        if (node->short_val < *(short *)data)
+            return GREATER;
+        if (node->short_val > *(short *)data)
+            return SMALLER;
+        return EQUAL;
     case STRING:
-        return strcmp(node->string_val, (char *)data) > 0 ? SMALLER : GREATER;
-        break;
+        if (node->string_val == NULL || data == NULL) {
+            return TREE_ERROR_NULL;
+        }
+        int cmp = strcmp(node->string_val, (char *)data);
+        if (cmp < 0)
+            return GREATER;
+        if (cmp > 0)
+            return SMALLER;
+        return EQUAL;
     default:
         return TREE_ERROR_TYPE_MISMATCH;
     }
@@ -107,12 +132,14 @@ int insert_node(struct tree *tree, void *data) {
 
     while (temp != NULL) {
         parent = temp;
-        if (compare(tree->type, temp, data) == SMALLER) {
+        int cmp_result = compare(tree->type, temp, data);
+        if (cmp_result == SMALLER) {
             temp = temp->left;
-        } else if (compare(tree->type, temp, data) == GREATER) {
+        } else if (cmp_result == GREATER) {
             temp = temp->right;
         } else {
-            printf("Error - cannot insert existing node");
+            fprintf(stderr, "Error - cannot insert existing node\n");
+            free(new_node);
             return TREE_ERROR_EXISTING_DATA;
         }
     }
@@ -127,35 +154,8 @@ int insert_node(struct tree *tree, void *data) {
     return TREE_SUCCESS;
 }
 
-int is_equal(enum data_type type, struct tree_node *node, void *data) {
-    switch (type) {
-    case INT:
-        return node->int_val == *(int *)data ? EQUAL : NOTEQUAL;
-        break;
-    case FLOAT:
-        return node->float_val == *(float *)data ? EQUAL : NOTEQUAL;
-        break;
-    case DOUBLE:
-        return node->double_val == *(double *)data ? EQUAL : NOTEQUAL;
-        break;
-    case CHAR:
-        return node->char_val == *(char *)data ? EQUAL : NOTEQUAL;
-        break;
-    case LONG:
-        return node->long_val == *(long *)data ? EQUAL : NOTEQUAL;
-        break;
-    case SHORT:
-        return node->short_val == *(short *)data ? EQUAL : NOTEQUAL;
-        break;
-    case STRING:
-        return strcmp(node->string_val, (char *)data) == 0 ? EQUAL : NOTEQUAL;
-        break;
-    default:
-        return TREE_ERROR_TYPE_MISMATCH;
-    }
-}
-
-void copy_value(enum data_type type, struct tree_node *dst, struct tree_node *src) {
+void copy_value(enum data_type type, struct tree_node *dst,
+                struct tree_node *src) {
     switch (type) {
     case INT:
         dst->int_val = src->int_val;
@@ -176,8 +176,12 @@ void copy_value(enum data_type type, struct tree_node *dst, struct tree_node *sr
         dst->int_val = src->int_val;
         break;
     case STRING:
-        if (dst->string_val == NULL || src->string_val == NULL) return;
-        unsigned long size_of_str = strlen(dst->string_val) > strlen(src->string_val) ? strlen(dst->string_val) : strlen(src->string_val);
+        if (dst->string_val == NULL || src->string_val == NULL)
+            return;
+        unsigned long size_of_str =
+            strlen(dst->string_val) > strlen(src->string_val)
+                ? strlen(dst->string_val)
+                : strlen(src->string_val);
         strncpy(dst->string_val, src->string_val, size_of_str);
         break;
     default:
@@ -187,14 +191,14 @@ void copy_value(enum data_type type, struct tree_node *dst, struct tree_node *sr
 
 int delete_node(struct tree *tree, void *data) {
     if (tree == NULL || tree->root == NULL) {
-        printf("Error - tree is empty.\n");
+        fprintf(stderr, "Error - tree is empty.\n");
         return TREE_ERROR_EMPTY;
     }
 
     struct tree_node *parent = NULL;
     struct tree_node *current = tree->root;
 
-    while (current != NULL && is_equal(tree->type, current, data) == NOTEQUAL) {
+    while (current != NULL && compare(tree->type, current, data) != EQUAL) {
         parent = current;
         if (compare(tree->type, current, data) == SMALLER) {
             current = current->left;
@@ -204,7 +208,7 @@ int delete_node(struct tree *tree, void *data) {
     }
 
     if (current == NULL) {
-        printf("Error - data not found.\n");
+        fprintf(stderr, "Error - data not found.\n");
         return TREE_ERROR_DATA_NOT_FOUND;
     }
 
@@ -264,12 +268,12 @@ int delete_node(struct tree *tree, void *data) {
 
 void free_tree(struct tree *tree) {
     if (tree == NULL) {
-        printf("tree is empty!\n");
+        fprintf(stderr, "tree is empty!\n");
         return;
     }
 
-    struct tree_node **stack = (struct tree_node **)malloc(
-        sizeof(struct tree_node *) * tree->size);
+    struct tree_node **stack =
+        (struct tree_node **)malloc(sizeof(struct tree_node *) * tree->size);
     int top = -1;
 
     struct tree_node *current = tree->root;
@@ -323,12 +327,12 @@ void print_node(struct tree_node *node, enum data_type type) {
 
 void print_tree(struct tree *tree) {
     if (tree->root == NULL) {
-        printf("tree is empty!\n");
+        fprintf(stderr, "tree is empty!\n");
         return;
     }
 
-    struct tree_node **stack = (struct tree_node **)malloc(
-        sizeof(struct tree_node *) * tree->size);
+    struct tree_node **stack =
+        (struct tree_node **)malloc(sizeof(struct tree_node *) * tree->size);
     int top = -1;
 
     struct tree_node *current = tree->root;
@@ -344,4 +348,27 @@ void print_tree(struct tree *tree) {
         current = current->right;
     }
     printf("\n");
+}
+
+int search(struct tree *tree, void *data) {
+    if (tree == NULL || tree->root == NULL) {
+        fprintf(stderr, "Error - tree is empty.\n");
+        return TREE_ERROR_EMPTY;
+    }
+
+    struct tree_node *current = tree->root;
+
+    while (current != NULL && compare(tree->type, current, data) != EQUAL) {
+        if (compare(tree->type, current, data) == SMALLER) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+
+    if (current == NULL) {
+        return TREE_ERROR_DATA_NOT_FOUND;
+    } else {
+        return TREE_DATA_FOUND;
+    }
 }

@@ -36,6 +36,7 @@ struct tree {
 };
 
 enum tree_error_code {
+    TREE_DATA_FOUND = 1,
     TREE_SUCCESS = 0,
     TREE_ERROR_NULL = -1,
     TREE_ERROR_EMPTY = -2,
@@ -50,4 +51,5 @@ int insert_node(struct tree *tree, void *data);
 int delete_node(struct tree *tree, void *data);
 void free_tree(struct tree *tree);
 void print_tree(struct tree *tree);
+int search(struct tree *tree, void *data);
 #endif // TREE_H

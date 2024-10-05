@@ -1,12 +1,12 @@
+#include "tree.h"
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include "tree.h"
 
 void test_tree_int() {
     struct tree *int_tree = init_tree(INT);
 
-    int val1 = 10, val2 = 5, val3 = 15, val4 = 20, val5 = 25; 
+    int val1 = 10, val2 = 5, val3 = 15, val4 = 20, val5 = 25;
 
     assert(insert_node(int_tree, &val1) == TREE_SUCCESS);
     assert(insert_node(int_tree, &val2) == TREE_SUCCESS);
@@ -16,6 +16,9 @@ void test_tree_int() {
 
     assert(int_tree->size == 5);
 
+    assert(search(int_tree, &val1) == TREE_DATA_FOUND);
+    assert(search(int_tree, &val5) == TREE_DATA_FOUND);
+
     assert(int_tree->root->int_val == val1);
 
     assert(int_tree->root->left->int_val == val2);
@@ -24,6 +27,7 @@ void test_tree_int() {
     assert(delete_node(int_tree, &val2) == TREE_SUCCESS);
     assert(int_tree->size == 4);
 
+    assert(search(int_tree, &val2) == TREE_ERROR_DATA_NOT_FOUND);
     free_tree(int_tree);
     printf("test_tree_int passed.\n");
 }
@@ -75,11 +79,23 @@ void test_tree_double() {
     printf("test_tree_double passed.\n");
 }
 
+void test_tree_duplicate_insertion() {
+    struct tree *int_tree = init_tree(INT);
+    int val1 = 10, val2 = 10;
+
+    assert(insert_node(int_tree, &val1) == TREE_SUCCESS);
+    assert(insert_node(int_tree, &val2) == TREE_ERROR_EXISTING_DATA);
+
+    free_tree(int_tree);
+    printf("test_tree_duplicate_insertion passed.\n");
+}
+
 int main() {
     test_tree_int();
     test_tree_string();
     test_tree_double();
-    
+    test_tree_duplicate_insertion();
+
     printf("All tests passed!\n");
     return 0;
 }
