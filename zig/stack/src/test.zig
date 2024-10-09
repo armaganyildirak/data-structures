@@ -2,7 +2,7 @@ const std = @import("std");
 const Stack = @import("stack.zig").Stack;
 
 test "test stack operations" {
-    var stack = Stack.init();
+    var stack = Stack(i32).init(std.testing.allocator);
 
     try stack.push(10);
     try stack.push(20);
@@ -26,7 +26,7 @@ test "test stack operations" {
 }
 
 test "test stack underflow" {
-    var stack = Stack.init();
+    var stack = Stack(i32).init(std.testing.allocator);
 
     try std.testing.expect(stack.is_empty());
 

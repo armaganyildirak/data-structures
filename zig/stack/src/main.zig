@@ -3,7 +3,10 @@ const Stack = @import("stack.zig").Stack;
 const StackError = @import("stack.zig").StackError;
 
 pub fn main() !void {
-    var stack = Stack.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var stack = Stack(i32).init(arena.allocator());
 
     try stack.push(10);
     try stack.push(20);

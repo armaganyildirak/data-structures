@@ -1,57 +1,64 @@
 const std = @import("std");
 
-pub const StackNode = struct {
-    data: i32,
-    next: ?*StackNode = null,
-};
-
 pub const StackError = error{
     StackEmpty,
 };
 
-pub const Stack = struct {
-    top: ?*StackNode = null,
-
-    pub fn init() Stack {
-        return Stack{ .top = null };
-    }
-
-    pub fn push(self: *Stack, data: i32) !void {
-        const new_node = try std.heap.page_allocator.create(StackNode);
-        new_node.* = StackNode{
-            .data = data,
-            .next = self.top,
+pub fn Stack(comptime Child: type) type {
+    return struct {
+        const This = @This();
+        const StackNode = struct {
+            data: Child,
+            next: ?*StackNode,
         };
-        self.top = new_node;
-    }
 
-    pub fn pop(self: *Stack) !i32 {
-        if (self.is_empty()) {
-            return StackError.StackEmpty;
+        gpa: std.mem.Allocator,
+        top: ?*StackNode = null,
+
+        pub fn init(gpa: std.mem.Allocator) This {
+            return This{
+                .gpa = gpa,
+                .top = null,
+            };
         }
-        const temp = self.top;
-        const popped_value = temp.?.data;
-        self.top = temp.?.next;
-        std.heap.page_allocator.destroy(temp.?);
-        return popped_value;
-    }
 
-    pub fn peek(self: *Stack) !i32 {
-        if (self.is_empty()) {
-            return StackError.StackEmpty;
+        pub fn push(this: *This, data: Child) !void {
+            const new_node = try this.gpa.create(StackNode);
+            new_node.* = StackNode{
+                .data = data,
+                .next = this.top,
+            };
+            this.top = new_node;
         }
-        return self.top.?.data;
-    }
 
-    pub fn is_empty(self: *Stack) bool {
-        return self.top == null;
-    }
-
-    pub fn free(self: *Stack) void {
-        while (self.top != null) {
-            const temp = self.top;
-            self.top = temp.?.next;
-            std.heap.page_allocator.destroy(temp.?);
+        pub fn pop(this: *This) !Child {
+            if (this.top) |top| {
+                const popped_value = top.data;
+                this.top = top.next;
+                this.gpa.destroy(top);
+                return popped_value;
+            } else {
+                return StackError.StackEmpty;
+            }
         }
-    }
-};
+
+        pub fn peek(this: *This) !Child {
+            if (this.top) |top| {
+                return top.data;
+            } else {
+                return StackError.StackEmpty;
+            }
+        }
+
+        pub fn is_empty(this: *This) bool {
+            return this.top == null;
+        }
+
+        pub fn free(this: *This) void {
+            while (this.top) |top| {
+                this.top = top.next;
+                this.gpa.destroy(top);
+            }
+        }
+    };
+}
