@@ -3,7 +3,7 @@ const Queue = @import("queue.zig").Queue;
 const QueueError = @import("queue.zig").QueueError;
 
 test "enqueue and dequeue operations" {
-    var queue = Queue.init();
+    var queue = Queue(i32).init(std.testing.allocator);
 
     try std.testing.expect(queue.head == null);
     try std.testing.expect(queue.tail == null);
@@ -35,7 +35,7 @@ test "enqueue and dequeue operations" {
 }
 
 test "dequeue on an empty queue" {
-    var queue = Queue.init();
+    var queue = Queue(i32).init(std.testing.allocator);
 
     const result = queue.dequeue();
     try std.testing.expectError(QueueError.EmptyQueue, result);

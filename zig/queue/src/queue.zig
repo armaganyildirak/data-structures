@@ -1,48 +1,68 @@
 const std = @import("std");
 
-pub const QueueNode = struct {
-    data: i32,
-    next: ?*QueueNode = null,
-};
-
 pub const QueueError = error{
     EmptyQueue,
 };
 
-pub const Queue = struct {
-    head: ?*QueueNode = null,
-    tail: ?*QueueNode = null,
-
-    pub fn init() Queue {
-        return Queue{ .head = null, .tail = null };
-    }
-
-    pub fn enqueue(self: *Queue, data: i32) !void {
-        const new_node = try std.heap.page_allocator.create(QueueNode);
-        new_node.* = QueueNode{
-            .data = data,
-            .next = null,
+pub fn Queue(comptime T: type) type {
+    return struct {
+        const This = @This();
+        const QueueNode = struct {
+            data: T,
+            next: ?*QueueNode,
         };
-        if (self.tail == null) {
-            self.head = new_node;
-            self.tail = new_node;
-        } else {
-            self.tail.?.next = new_node;
-            self.tail = new_node;
-        }
-    }
 
-    pub fn dequeue(self: *Queue) !i32 {
-        if (self.head == null) {
-            return QueueError.EmptyQueue;
+        gpa: std.mem.Allocator,
+        head: ?*QueueNode = null,
+        tail: ?*QueueNode = null,
+
+        pub fn init(gpa: std.mem.Allocator) This {
+            return This{
+                .gpa = gpa,
+                .head = null,
+                .tail = null,
+            };
         }
-        const dequeued_data = self.head.?.data;
-        const old_head = self.head;
-        self.head = self.head.?.next;
-        if (self.head == null) {
-            self.tail = null;
+
+        pub fn enqueue(this: *This, data: T) !void {
+            const new_node = try this.gpa.create(QueueNode);
+            new_node.* = QueueNode{
+                .data = data,
+                .next = null,
+            };
+            if (this.tail == null) {
+                this.head = new_node;
+                this.tail = new_node;
+            } else {
+                if (this.tail) |tail| {
+                    tail.next = new_node;
+                    this.tail = new_node;
+                }
+            }
         }
-        std.heap.page_allocator.destroy(old_head.?);
-        return dequeued_data;
-    }
-};
+
+        pub fn dequeue(this: *This) !T {
+            if (this.head) |head| {
+                const dequeued_data = head.data;
+                this.head = head.next;
+                if (this.head == null) {
+                    this.tail = null;
+                }
+                this.gpa.destroy(head);
+                return dequeued_data;
+            } else {
+                return QueueError.EmptyQueue;
+            }
+        }
+
+        pub fn free(this: *This) void {
+            while (this.head) |head| {
+                head = head.next;
+                if (head == null) {
+                    this.tail = null;
+                }
+                this.gpa.destroy(head);
+            }
+        }
+    };
+}
