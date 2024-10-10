@@ -4,11 +4,11 @@ pub const StackError = error{
     StackEmpty,
 };
 
-pub fn Stack(comptime Child: type) type {
+pub fn Stack(comptime T: type) type {
     return struct {
         const This = @This();
         const StackNode = struct {
-            data: Child,
+            data: T,
             next: ?*StackNode,
         };
 
@@ -22,7 +22,7 @@ pub fn Stack(comptime Child: type) type {
             };
         }
 
-        pub fn push(this: *This, data: Child) !void {
+        pub fn push(this: *This, data: T) !void {
             const new_node = try this.gpa.create(StackNode);
             new_node.* = StackNode{
                 .data = data,
@@ -31,7 +31,7 @@ pub fn Stack(comptime Child: type) type {
             this.top = new_node;
         }
 
-        pub fn pop(this: *This) !Child {
+        pub fn pop(this: *This) !T {
             if (this.top) |top| {
                 const popped_value = top.data;
                 this.top = top.next;
@@ -42,7 +42,7 @@ pub fn Stack(comptime Child: type) type {
             }
         }
 
-        pub fn peek(this: *This) !Child {
+        pub fn peek(this: *This) !T {
             if (this.top) |top| {
                 return top.data;
             } else {
