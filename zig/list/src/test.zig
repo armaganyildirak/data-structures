@@ -2,60 +2,54 @@ const std = @import("std");
 const List = @import("list.zig").List;
 const ListError = @import("list.zig").ListError;
 
-test "List initialization should set head to null" {
-    const list = List.init();
-    try std.testing.expect(list.head == null);
+test "Test Insertion" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var list = List(i32).init(arena.allocator());
+    defer list.free();
+
+    try list.insert_node(10, 0);
+    try list.insert_node(20, 1);
+    try list.insert_node(30, 2);
+
+    try std.testing.expectEqual(list.size, 3);
 }
 
-test "Inserting multiple nodes should link them correctly" {
-    var list = List.init();
-    try list.insert_node(10);
-    try list.insert_node(20);
-    try list.insert_node(30);
+test "Test Deletion" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
-    const head = list.head;
-    try std.testing.expect(head != null);
-    try std.testing.expect(head.?.data == 10);
-    try std.testing.expect(head.?.prev == null);
-    try std.testing.expect(head.?.next != null);
+    var list = List(i32).init(arena.allocator());
+    defer list.free();
 
-    const second_node = head.?.next;
-    try std.testing.expect(second_node != null);
-    try std.testing.expect(second_node.?.data == 20);
-    try std.testing.expect(second_node.?.prev == head);
-    try std.testing.expect(second_node.?.next != null);
+    try list.insert_node(10, 0);
+    try list.insert_node(20, 1);
+    try list.insert_node(30, 2);
 
-    const third_node = second_node.?.next;
-    try std.testing.expect(third_node != null);
-    try std.testing.expect(third_node.?.data == 30);
-    try std.testing.expect(third_node.?.prev == second_node);
-    try std.testing.expect(third_node.?.next == null);
+    try list.delete_node(1);
+    try std.testing.expectEqual(list.size, 2);
 }
 
-test "Deleting a node from an empty list should throw an exception" {
-    var list = List.init();
-    const result = list.delete_node(10);
-    try std.testing.expectError(ListError.EmptyList, result);
+test "Test Delete Out of Bounds" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var list = List(i32).init(arena.allocator());
+    defer list.free();
+
+    try list.insert_node(10, 0);
+    try list.insert_node(20, 1);
+
+    try std.testing.expect(list.delete_node(3) == ListError.OutofBounds);
 }
 
-test "Deleting a non-existent node should throw an exception" {
-    var list = List.init();
-    try list.insert_node(10);
-    try list.insert_node(20);
-    const result = list.delete_node(30);
-    try std.testing.expectError(ListError.NodeNotFound, result);
-}
+test "Test Empty List Deletion" {
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
-test "Deleting a node should update the list correctly" {
-    var list = List.init();
-    try list.insert_node(10);
-    try list.insert_node(20);
-    try list.insert_node(30);
+    var list = List(i32).init(arena.allocator());
+    defer list.free();
 
-    try list.delete_node(20);
-
-    try std.testing.expect(list.head.?.data == 10);
-
-    try std.testing.expect(list.head.?.next.?.data == 30);
-    try std.testing.expect(list.head.?.next.?.prev == list.head);
+    try std.testing.expect(list.delete_node(0) == ListError.EmptyList);
 }

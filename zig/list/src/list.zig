@@ -1,77 +1,120 @@
 const std = @import("std");
 
-pub const ListNode = struct {
-    data: i32,
-    next: ?*ListNode = null,
-    prev: ?*ListNode = null,
-};
-
 pub const ListError = error{
     EmptyList,
     NodeNotFound,
+    OutofBounds,
 };
 
-pub const List = struct {
-    head: ?*ListNode = null,
-
-    pub fn init() List {
-        return List{ .head = null };
-    }
-
-    pub fn insert_node(self: *List, data: i32) !void {
-        const new_node = try std.heap.page_allocator.create(ListNode);
-        new_node.* = ListNode{
-            .data = data,
-            .next = null,
-            .prev = null,
+pub fn List(comptime T: type) type {
+    return struct {
+        const This = @This();
+        const ListNode = struct {
+            data: T,
+            next: ?*ListNode,
+            prev: ?*ListNode,
         };
 
-        if (self.head == null) {
-            self.head = new_node;
-        } else {
-            var temp = self.head;
-            while (temp.?.next != null) {
-                temp = temp.?.next;
-            }
-            temp.?.next = new_node;
-            new_node.prev = temp;
-        }
-    }
+        gpa: std.mem.Allocator,
+        head: ?*ListNode = null,
+        size: u32 = 0,
 
-    pub fn delete_node(self: *List, data: i32) !void {
-        if (self.head == null) {
-            return ListError.EmptyList;
+        pub fn init(gpa: std.mem.Allocator) This {
+            return This{
+                .gpa = gpa,
+                .head = null,
+                .size = 0,
+            };
         }
 
-        var temp = self.head;
-        while (temp != null and temp.?.data != data) {
-            temp = temp.?.next;
-        }
-        if (temp == null) {
-            return ListError.NodeNotFound;
-        }
-        if (temp == self.head) {
-            self.head = temp.?.next;
-            if (self.head != null) {
-                self.head.?.prev = null;
-            }
-        } else {
-            if (temp.?.prev != null) {
-                temp.?.prev.?.next = temp.?.next;
-            }
-            if (temp.?.next != null) {
-                temp.?.next.?.prev = temp.?.prev;
-            }
-        }
-        std.heap.page_allocator.destroy(temp.?);
-    }
+        pub fn insert_node(this: *This, data: T, idx: u32) !void {
+            const new_node = try this.gpa.create(ListNode);
+            new_node.* = ListNode{
+                .data = data,
+                .next = null,
+                .prev = null,
+            };
 
-    pub fn print_list(self: *List) void {
-        var temp = self.head;
-        while (temp != null) {
-            std.debug.print("{} -> ", .{temp.?.data});
-            temp = temp.?.next;
+            if (idx > this.size) {
+                return ListError.OutofBounds;
+            }
+
+            if (idx == 0) {
+                if (this.head) |head| {
+                    new_node.next = head;
+                    head.prev = new_node;
+                } else {
+                    this.head = new_node;
+                }
+            } else {
+                var current = this.head;
+                var i: u32 = 0;
+                while (i < idx - 1) : (i += 1) {
+                    if (current) |temp| {
+                        current = temp.next;
+                    }
+                }
+                if (current) |temp| {
+                    new_node.next = temp.next;
+                    new_node.prev = temp;
+
+                    if (temp.next) |next| {
+                        next.prev = new_node;
+                    }
+                    temp.next = new_node;
+                }
+            }
+            this.size += 1;
         }
-        std.debug.print("NULL\n", .{});
-    }
-};
+
+        pub fn delete_node(this: *This, idx: u32) !void {
+            if (this.size == 0) {
+                return ListError.EmptyList;
+            }
+
+            if (idx >= this.size) {
+                return ListError.OutofBounds;
+            }
+
+            var current = this.head;
+            var i: u32 = 0;
+            while (i < idx) : (i += 1) {
+                if (current) |temp| {
+                    current = temp.next;
+                }
+            }
+
+            if (current) |temp| {
+                if (temp.prev) |prev| {
+                    prev.next = temp.next;
+                } else {
+                    this.head = temp.next;
+                }
+
+                if (temp.next) |next| {
+                    next.prev = temp.prev;
+                }
+
+                this.gpa.destroy(temp);
+                this.size -= 1;
+            }
+        }
+
+        pub fn print_list(this: *This) void {
+            var current = this.head;
+            while (current) |node| {
+                std.debug.print("{} -> ", .{node.data});
+                current = node.next;
+            }
+            std.debug.print("NULL\n", .{});
+        }
+
+        pub fn free(this: *This) void {
+            while (this.head) |head| {
+                this.head = head.next;
+                head.prev = null;
+                this.gpa.destroy(head);
+            }
+        }
+    };
+}
