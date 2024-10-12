@@ -15,12 +15,14 @@ pub fn Queue(comptime T: type) type {
         gpa: std.mem.Allocator,
         head: ?*QueueNode = null,
         tail: ?*QueueNode = null,
+        size: u32 = 0,
 
         pub fn init(gpa: std.mem.Allocator) This {
             return This{
                 .gpa = gpa,
                 .head = null,
                 .tail = null,
+                .size = 0,
             };
         }
 
@@ -33,10 +35,12 @@ pub fn Queue(comptime T: type) type {
             if (this.tail == null) {
                 this.head = new_node;
                 this.tail = new_node;
+                this.size += 1;
             } else {
                 if (this.tail) |tail| {
                     tail.next = new_node;
                     this.tail = new_node;
+                    this.size += 1;
                 }
             }
         }
@@ -49,6 +53,7 @@ pub fn Queue(comptime T: type) type {
                     this.tail = null;
                 }
                 this.gpa.destroy(head);
+                this.size -= 1;
                 return dequeued_data;
             } else {
                 return QueueError.EmptyQueue;
@@ -57,10 +62,11 @@ pub fn Queue(comptime T: type) type {
 
         pub fn free(this: *This) void {
             while (this.head) |head| {
-                head = head.next;
-                if (head == null) {
+                this.head = head.next;
+                if (this.head == null) {
                     this.tail = null;
                 }
+                this.size -= 1;
                 this.gpa.destroy(head);
             }
         }

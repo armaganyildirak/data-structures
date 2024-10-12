@@ -6,6 +6,7 @@ pub fn main() !void {
     defer arena.deinit();
 
     var queue = Queue(i32).init(arena.allocator());
+    defer queue.free();
     try queue.enqueue(10);
     try queue.enqueue(20);
     try queue.enqueue(30);

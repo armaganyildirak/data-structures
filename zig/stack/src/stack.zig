@@ -14,11 +14,13 @@ pub fn Stack(comptime T: type) type {
 
         gpa: std.mem.Allocator,
         top: ?*StackNode = null,
+        size: u32 = 0,
 
         pub fn init(gpa: std.mem.Allocator) This {
             return This{
                 .gpa = gpa,
                 .top = null,
+                .size = 0,
             };
         }
 
@@ -28,6 +30,7 @@ pub fn Stack(comptime T: type) type {
                 .data = data,
                 .next = this.top,
             };
+            this.size += 1;
             this.top = new_node;
         }
 
@@ -36,6 +39,7 @@ pub fn Stack(comptime T: type) type {
                 const popped_value = top.data;
                 this.top = top.next;
                 this.gpa.destroy(top);
+                this.size -= 1;
                 return popped_value;
             } else {
                 return StackError.StackEmpty;

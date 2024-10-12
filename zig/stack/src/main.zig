@@ -7,6 +7,7 @@ pub fn main() !void {
     defer arena.deinit();
 
     var stack = Stack(i32).init(arena.allocator());
+    defer stack.free();
 
     try stack.push(10);
     try stack.push(20);
@@ -27,6 +28,4 @@ pub fn main() !void {
     if (stack.is_empty()) {
         return StackError.StackEmpty;
     }
-
-    stack.free();
 }
