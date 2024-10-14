@@ -3,12 +3,15 @@ const Tree = @import("tree.zig").Tree;
 const TreeError = @import("tree.zig").TreeError;
 
 test "initialize tree" {
-    const tree = Tree.init();
+    const tree = Tree(i32).init(std.testing.allocator);
     try std.testing.expect(tree.root == null);
 }
 
 test "insert single node" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try std.testing.expect(tree.root.?.data == 10);
     try std.testing.expect(tree.root.?.left == null);
@@ -16,7 +19,10 @@ test "insert single node" {
 }
 
 test "insert multiple nodes" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);
@@ -27,7 +33,10 @@ test "insert multiple nodes" {
 }
 
 test "insert duplicate node" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
 
     const result = tree.insert_node(10);
@@ -39,8 +48,10 @@ test "insert duplicate node" {
 }
 
 test "deleting leaf nodes" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);
@@ -55,8 +66,10 @@ test "deleting leaf nodes" {
 }
 
 test "deleting node with one child" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);
@@ -69,8 +82,10 @@ test "deleting node with one child" {
 }
 
 test "deleting node with two children" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);
@@ -84,8 +99,10 @@ test "deleting node with two children" {
 }
 
 test "deleting node not found" {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
 
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);

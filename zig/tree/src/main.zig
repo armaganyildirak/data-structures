@@ -2,7 +2,10 @@ const std = @import("std");
 const Tree = @import("tree.zig").Tree;
 
 pub fn main() !void {
-    var tree = Tree.init();
+    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+    defer arena.deinit();
+
+    var tree = Tree(i32).init(arena.allocator());
     try tree.insert_node(10);
     try tree.insert_node(5);
     try tree.insert_node(15);
