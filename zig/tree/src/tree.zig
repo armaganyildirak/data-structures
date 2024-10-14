@@ -3,6 +3,7 @@ const std = @import("std");
 pub const TreeError = error{
     ExistingNode,
     EmptyTree,
+    EmptyNode,
     DataNotFound,
 };
 
@@ -115,24 +116,22 @@ pub fn Tree(comptime T: type) type {
                         this.gpa.destroy(curr);
                     } else {
                         var temp_parent = curr;
-                        var temp = curr.right;
-                        // TODO!
-                        while (temp.?.left != null) {
-                            temp_parent = temp.?;
-                            temp = temp.?.left;
+                        var temp = curr.right orelse return TreeError.EmptyNode;
+
+                        while (temp.left != null) {
+                            temp_parent = temp;
+                            temp = temp.left orelse return TreeError.EmptyNode;
                         }
 
-                        if (temp) |copy| {
-                            curr.data = copy.data;
-                            if (temp_parent.left == copy) {
-                                temp_parent.left = copy.right;
-                            } else {
-                                temp_parent.right = copy.right;
-                            }
-
-                            this.size -= 1;
-                            this.gpa.destroy(copy);
+                        curr.data = temp.data;
+                        if (temp_parent.left == temp) {
+                            temp_parent.left = temp.right;
+                        } else {
+                            temp_parent.right = temp.right;
                         }
+
+                        this.size -= 1;
+                        this.gpa.destroy(temp);
                     }
                 }
             }
