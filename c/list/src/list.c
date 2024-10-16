@@ -106,6 +106,74 @@ int insert_node(struct list *list, void *data, int idx) {
     return LIST_SUCCESS;
 }
 
+int append(struct list *list, void *data) {
+    if (list == NULL) {
+        fprintf(stderr, "Error - list is NULL in insert_node\n");
+        return LIST_ERROR_NULL;
+    }
+
+    struct list_node *new_node =
+        (struct list_node *)malloc(sizeof(struct list_node));
+    if (new_node == NULL) {
+        perror("Error - malloc failed in insert_node");
+        return LIST_ERROR_MALLOC;
+    }
+
+    new_node->next = NULL;
+    new_node->prev = NULL;
+
+    int set_result = set_data(list->type, new_node, data);
+    if (set_result != LIST_SUCCESS) {
+        free(new_node);
+        return set_result;
+    }
+
+    struct list_node *current = list->head;
+    while (current->next != NULL ) {
+        current = current->next;
+    }
+
+    current->next = new_node;
+    new_node->prev = current;
+
+    list->size++;
+    return LIST_SUCCESS;
+}
+
+int prepend(struct list *list, void *data) {
+    if (list == NULL) {
+        fprintf(stderr, "Error - list is NULL in insert_node\n");
+        return LIST_ERROR_NULL;
+    }
+
+    struct list_node *new_node =
+        (struct list_node *)malloc(sizeof(struct list_node));
+    if (new_node == NULL) {
+        perror("Error - malloc failed in insert_node");
+        return LIST_ERROR_MALLOC;
+    }
+
+    new_node->next = NULL;
+    new_node->prev = NULL;
+
+    int set_result = set_data(list->type, new_node, data);
+    if (set_result != LIST_SUCCESS) {
+        free(new_node);
+        return set_result;
+    }
+
+    new_node->next = list->head;
+
+    if (list->head != NULL) {
+        list->head->prev = new_node;
+    }
+
+    list->head = new_node;
+
+    list->size++;
+    return LIST_SUCCESS;
+}
+
 int delete_node(struct list *list, int idx) {
     if (list == NULL) {
         fprintf(stderr, "Error - list is NULL in delete_node\n");

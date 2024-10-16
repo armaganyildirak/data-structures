@@ -40,7 +40,7 @@ void test_insert_node() {
 
     int val1 = 10, val2 = 20, val3 = 30;
     insert_node(int_list, &val1, 0);
-    insert_node(int_list, &val2, 1);
+    append(int_list, &val2);
     insert_node(int_list, &val3, 1);
 
     assert(int_list->size == 3);
@@ -57,7 +57,7 @@ void test_delete_node() {
 
     int val1 = 10, val2 = 20, val3 = 30;
     insert_node(int_list, &val1, 0);
-    insert_node(int_list, &val2, 1);
+    append(int_list, &val2);
     insert_node(int_list, &val3, 1);
 
     assert(delete_node(int_list, 1) == LIST_SUCCESS);
@@ -77,14 +77,17 @@ void test_string_handling() {
     struct list *str_list = init_list(STRING);
 
     insert_node(str_list, "hello", 0);
-    insert_node(str_list, "world", 1);
-    insert_node(str_list, "!", 1);
+    append(str_list, "world");
+    prepend(str_list, "hi");
+    insert_node(str_list, "!", 2);
 
-    assert(str_list->size == 3);
-    assert(strcmp(str_list->head->string_val, "hello") == 0);
-    assert(strcmp(str_list->head->next->string_val, "!") == 0);
-    assert(strcmp(str_list->head->next->next->string_val, "world") == 0);
-
+    assert(str_list->size == 4);
+    assert(strcmp(str_list->head->string_val, "hi") == 0);
+    assert(strcmp(str_list->head->next->string_val, "hello") == 0);
+    assert(strcmp(str_list->head->next->next->string_val, "!") == 0);
+    assert(strcmp(str_list->head->next->next->next->string_val, "world") == 0);
+    
+    assert(delete_node(str_list, 0) == LIST_SUCCESS);
     assert(delete_node(str_list, 1) == LIST_SUCCESS);
     assert(str_list->size == 2);
     assert(strcmp(str_list->head->string_val, "hello") == 0);

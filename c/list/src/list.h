@@ -49,6 +49,8 @@ enum list_error_code {
 
 struct list *init_list(enum data_type type);
 int insert_node(struct list *list, void *data, int idx);
+int append(struct list *list, void *data);
+int prepend(struct list *list, void *data);
 int delete_node(struct list *list, int idx);
 void print_list(const struct list *list);
 void free_list(struct list *list);
