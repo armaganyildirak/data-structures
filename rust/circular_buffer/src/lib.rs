@@ -1,4 +1,4 @@
-const BUFFER_SIZE: usize = 255;
+const BUFFER_SIZE: usize = 256;
 
 pub struct CircularBuffer {
     buffer: [u8; BUFFER_SIZE],
@@ -42,6 +42,7 @@ impl CircularBuffer {
 
         self.buffer[self.head] = data;
         self.head = (self.head + 1) % BUFFER_SIZE;
+        println!("{:?}", self.head);
 
         Ok(())
     }
@@ -69,25 +70,68 @@ mod tests {
         assert!(cb.is_empty());
         assert!(!cb.is_full());
 
-        // Write to the buffer
         cb.write(42).unwrap();
         assert!(!cb.is_empty());
         assert_eq!(cb.read().unwrap(), 42);
         assert!(cb.is_empty());
 
-        // Fill the buffer and check for full condition
         for i in 0..(BUFFER_SIZE - 1) {
             cb.write(i as u8).unwrap();
         }
         assert!(cb.is_full());
 
-        // Check if it returns an error when trying to write to a full buffer
         assert_eq!(cb.write(255), Err(CircularBufferError::BufferFull));
 
-        // Read all elements and check for empty condition
         for i in 0..(BUFFER_SIZE - 1) {
             assert_eq!(cb.read().unwrap(), i as u8);
         }
         assert!(cb.is_empty());
     }
+
+    #[test]
+    fn test_buffer_wraparound() {
+        let mut cb = CircularBuffer::new();
+    
+        for i in 0..(BUFFER_SIZE - 1) {
+            cb.write(i as u8).unwrap();
+        }
+    
+        for _ in 0..(BUFFER_SIZE / 2) {
+            cb.read().unwrap();
+        }
+    
+        for i in 0..(BUFFER_SIZE / 2) {
+            cb.write(i as u8).unwrap();
+        }
+    
+        for i in (BUFFER_SIZE / 2)..(BUFFER_SIZE - 1) {
+            assert_eq!(cb.read().unwrap(), i as u8);
+        }
+    
+        for i in 0..(BUFFER_SIZE / 2) {
+            assert_eq!(cb.read().unwrap(), i as u8);
+        }
+    }
+
+    #[test]
+    fn test_partial_read_write() {
+        let mut cb = CircularBuffer::new();
+
+        for i in 0..(BUFFER_SIZE / 2) {
+            cb.write(i as u8).unwrap();
+        }
+
+        for i in 0..(BUFFER_SIZE / 4) {
+            assert_eq!(cb.read().unwrap(), i as u8);
+        }
+
+        for i in (BUFFER_SIZE / 2)..(BUFFER_SIZE / 2 + BUFFER_SIZE / 4) {
+            cb.write(i as u8).unwrap();
+        }
+
+        for i in (BUFFER_SIZE / 4)..(BUFFER_SIZE / 2 + BUFFER_SIZE / 4) {
+            assert_eq!(cb.read().unwrap(), i as u8);
+        }
+    }
+
 }
