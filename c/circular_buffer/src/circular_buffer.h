@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define BUFFER_SIZE 255
+#define BUFFER_SIZE 256
 
 struct circular_buffer {
     uint8_t buffer[BUFFER_SIZE];
