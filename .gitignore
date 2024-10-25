@@ -1,3 +1,13 @@
+*/*/stack
+*/*/stack.o
+*/*/list
+*/*/list.o
+*/*/queue
+*/*/queue.o
+*/*/tree
+*/*/tree.o
+*/*/zig-out
+*/*/.zig-cache
 */*/app
 */*/Cargo.lock
 */*/target
