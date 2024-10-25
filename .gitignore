@@ -8,3 +8,8 @@
 */*/tree.o
 */*/zig-out
 */*/.zig-cache
+*/*/app
+*/*/Cargo.lock
+*/*/target
+*/*/bin
+*/*/obj
