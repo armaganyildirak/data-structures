@@ -13,7 +13,7 @@ BIN_DIR = bin
 # Files
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
-TARGET = $(BIN_DIR)/circular_buffer_program
+TARGET = $(BIN_DIR)/hash_table_program
 
 # Rules
 all: $(TARGET)
